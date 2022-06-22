@@ -5,9 +5,9 @@
 //! use terminal_banner::Banner;
 //! let banner = Banner::new()
 //!     .text(Cow::from("LIPSUM"))
-//!     .text(Cow::from("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."));
-//! let result = banner.render();
-//! println!("{}", result);
+//!     .text(Cow::from("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))
+//!     .render();
+//! println!("{}", banner);
 //! ```
 #![deny(missing_docs)]
 use std::borrow::Cow;
