@@ -1,5 +1,5 @@
 use std::borrow::Cow;
-use terminal_banner::{Banner, Padding, BoxSymbols};
+use terminal_banner::{Banner, BoxSymbols, Padding};
 
 fn main() {
     let banner = Banner::new()
