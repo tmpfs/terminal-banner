@@ -85,7 +85,6 @@ pub struct Banner<'a> {
 }
 
 impl<'a> Banner<'a> {
-
     /// Create a new banner.
     pub fn new() -> Self {
         Default::default()
