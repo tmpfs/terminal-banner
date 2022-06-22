@@ -82,7 +82,6 @@ pub struct Banner<'a> {
     padding: Padding,
 }
 
-
 impl<'a> Default for Banner<'a> {
     fn default() -> Self {
         Self::new()
@@ -179,4 +178,3 @@ impl<'a> Banner<'a> {
         message
     }
 }
-
