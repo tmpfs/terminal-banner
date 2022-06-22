@@ -1,0 +1,13 @@
+[package]
+name = "terminal-banner"
+version = "0.1.0"
+edition = "2021"
+authors = ["muji <muji@tmpfs.org>"]
+description = "Render a banner to the terminal"
+keywords = ["terminal", "banner", "wordwrap"]
+repository = "https://github.com/tmpfs/terminal-banner"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+
+[dependencies]
+textwrap = { version = "0.15", features = ["terminal_size"] }
