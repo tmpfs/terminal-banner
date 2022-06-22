@@ -76,26 +76,25 @@ impl Padding {
 }
 
 /// Render a terminal banner.
+#[derive(Default)]
 pub struct Banner<'a> {
     symbols: BoxSymbols,
     text: Vec<Cow<'a, str>>,
     padding: Padding,
-}
-
-impl<'a> Default for Banner<'a> {
-    fn default() -> Self {
-        Self::new()
-    }
+    width: Option<usize>,
 }
 
 impl<'a> Banner<'a> {
+
     /// Create a new banner.
     pub fn new() -> Self {
-        Self {
-            symbols: Default::default(),
-            text: Vec::new(),
-            padding: Default::default(),
-        }
+        Default::default()
+    }
+
+    /// Set an explicit width for the banner.
+    pub fn width(mut self, width: usize) -> Self {
+        self.width = Some(width);
+        self
     }
 
     /// Set the banner padding.
@@ -118,7 +117,7 @@ impl<'a> Banner<'a> {
 
     /// Render the banner.
     pub fn render(&self) -> String {
-        let width = termwidth();
+        let width = self.width.unwrap_or_else(termwidth);
         let mut indent = String::from(self.symbols.v);
 
         indent.push_str(&String::from(' ').repeat(self.padding.left.into()));
