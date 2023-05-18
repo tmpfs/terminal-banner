@@ -114,6 +114,13 @@ impl<'a> Banner<'a> {
         self
     }
 
+    /// Append a divider rule.
+    pub fn divider(self) -> Self {
+        let width = self.width.unwrap_or_else(termwidth) - 2 - self.padding.left as usize - self.padding.right as usize;
+        let text = Cow::Owned(String::from(self.symbols.h).repeat(width));
+        self.text(text)
+    }
+
     /// Render the banner.
     pub fn render(&self) -> String {
         let width = self.width.unwrap_or_else(termwidth);
