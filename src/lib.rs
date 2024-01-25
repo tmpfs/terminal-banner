@@ -1,17 +1,22 @@
 //! Tiny utility to render a boxed banner at the width of the terminal.
 //!
 //! ```
-//! use std::borrow::Cow;
-//! use terminal_banner::Banner;
+//! use terminal_banner::{Banner, Text};
 //! let banner = Banner::new()
-//!     .text(Cow::from("LIPSUM"))
-//!     .text(Cow::from("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))
+//!     .text(Text::from("LIPSUM"))
+//!     .text(Text::from("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))
 //!     .render();
 //! println!("{}", banner);
 //! ```
-#![deny(missing_docs)]
-use std::borrow::Cow;
-use textwrap::{core::display_width, termwidth, wrap, Options};
+// #![deny(missing_docs)]
+
+use colored::Colorize;
+use textwrap::core::display_width;
+use textwrap::{termwidth, wrap, Options};
+
+pub use text::{Text, TextAlign, TextStyle};
+
+mod text;
 
 /// Collection of box drawing symbols used to draw the banner outline.
 pub struct BoxSymbols {
@@ -77,14 +82,14 @@ impl Padding {
 
 /// Render a terminal banner.
 #[derive(Default)]
-pub struct Banner<'a> {
+pub struct Banner {
     symbols: BoxSymbols,
-    text: Vec<Cow<'a, str>>,
+    lines: Vec<Text>,
     padding: Padding,
     width: Option<usize>,
 }
 
-impl<'a> Banner<'a> {
+impl Banner {
     /// Create a new banner.
     pub fn new() -> Self {
         Default::default()
@@ -109,16 +114,20 @@ impl<'a> Banner<'a> {
     }
 
     /// Append a block of text to wrap inside the banner.
-    pub fn text(mut self, text: Cow<'a, str>) -> Self {
-        self.text.push(text);
+    pub fn text(mut self, text: Text) -> Self {
+        self.lines.push(text);
         self
     }
 
     /// Append a divider rule.
-    pub fn divider(self) -> Self {
-        let width = self.width.unwrap_or_else(termwidth) - 2 - self.padding.left as usize - self.padding.right as usize;
-        let text = Cow::Owned(String::from(self.symbols.h).repeat(width));
-        self.text(text)
+    pub fn divider(mut self) -> Self {
+        let width = self.width.unwrap_or_else(termwidth)
+            - 2
+            - self.padding.left as usize
+            - self.padding.right as usize;
+        let text = Text::from(String::from(self.symbols.h).repeat(width));
+        self.lines.push(text);
+        self
     }
 
     /// Render the banner.
@@ -153,14 +162,40 @@ impl<'a> Banner<'a> {
             message.push_str(&spacer);
         }
 
-        let text_length = self.text.len();
-        for (index, text) in self.text.iter().enumerate() {
-            let lines = wrap(text.as_ref(), &options);
+        let lines_length = self.lines.len();
+        for (index, text) in self.lines.iter().enumerate() {
+            let repeat = if text.content.len() > width {
+                0
+            } else {
+                match text.style.align {
+                    TextAlign::LEFT => 0,
+                    TextAlign::RIGHT => {
+                        width
+                            - 2
+                            - self.padding.right as usize
+                            - text.content.len()
+                    }
+                    TextAlign::CENTER => (width - 2 - text.content.len()) / 2,
+                }
+            };
+            let mut context = String::from(' ').repeat(if repeat > 0 {
+                repeat - self.padding.right as usize
+            } else {
+                repeat
+            });
+            context.push_str(text.content.as_str());
+            let lines = wrap(context.as_str(), &options);
             let length = lines.len();
 
             for (index, line) in lines.into_iter().enumerate() {
-                message.push_str(&line);
-                let fill_width = width - (display_width(&line) + 1);
+                let mut line_text = String::from(self.symbols.v);
+                line_text.push_str(
+                    &line[self.symbols.v.len_utf8()..]
+                        .color(text.style.color)
+                        .to_string(),
+                );
+                message.push_str(&line_text);
+                let fill_width = width - display_width(&line) - 1;
                 let filler = String::from(' ').repeat(fill_width);
                 message.push_str(&filler);
                 message.push(self.symbols.v);
@@ -171,7 +206,7 @@ impl<'a> Banner<'a> {
 
             message.push('\n');
 
-            if index < text_length - 1 {
+            if index < lines_length - 1 {
                 message.push_str(&spacer);
             }
         }

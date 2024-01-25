@@ -10,4 +10,5 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 
 [dependencies]
-textwrap = { version = "0.15", features = ["terminal_size"] }
+colored = "2.1.0"
+textwrap = { version = "0.16", features = ["terminal_size"] }
