@@ -1,4 +1,3 @@
-use colored::Color;
 use terminal_banner::*;
 
 #[test]
@@ -9,7 +8,7 @@ fn default() {
         .symbols(BoxSymbols::default())
         .padding(Padding::one())
         .text(Text::from("DEFAULT"))
-        .text(Text::from("LEFT").align(TextAlign::LEFT).color(Color::Green))
+        .text(Text::from("LEFT").align(TextAlign::LEFT))
         .text(Text::from("CENTER").align(TextAlign::CENTER))
         .text(Text::from("RIGHT").align(TextAlign::RIGHT))
         .divider()

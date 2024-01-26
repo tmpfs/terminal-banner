@@ -1,3 +1,4 @@
+#[cfg(feature = "color")]
 use colored::Color;
 
 #[derive(Default, Copy, Clone)]
@@ -21,6 +22,7 @@ pub struct Text {
 #[derive(Clone)]
 pub struct TextStyle {
     pub align: TextAlign,
+    #[cfg(feature = "color")]
     pub color: Color,
 }
 
@@ -28,6 +30,7 @@ impl Default for TextStyle {
     fn default() -> Self {
         Self {
             align: Default::default(),
+            #[cfg(feature = "color")]
             color: Color::BrightWhite,
         }
     }
@@ -39,6 +42,7 @@ impl Text {
         self
     }
 
+    #[cfg(feature = "color")]
     pub fn color(mut self, color: Color) -> Self {
         self.style.color = color;
         self

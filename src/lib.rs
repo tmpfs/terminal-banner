@@ -10,6 +10,7 @@
 //! ```
 // #![deny(missing_docs)]
 
+#[cfg(feature = "color")]
 use colored::Colorize;
 use textwrap::core::display_width;
 use textwrap::{termwidth, wrap, Options};
@@ -188,13 +189,16 @@ impl Banner {
             let length = lines.len();
 
             for (index, line) in lines.into_iter().enumerate() {
-                let mut line_text = String::from(self.symbols.v);
-                line_text.push_str(
-                    &line[self.symbols.v.len_utf8()..]
+                #[cfg(feature = "color")]
+                let line = {
+                    let mut line_text = String::from(self.symbols.v);
+                    let line = &line[self.symbols.v.len_utf8()..]
                         .color(text.style.color)
-                        .to_string(),
-                );
-                message.push_str(&line_text);
+                        .to_string();
+                    line_text.push_str(&line);
+                    line_text
+                };
+                message.push_str(&line);
                 let fill_width = width - display_width(&line) - 1;
                 let filler = String::from(' ').repeat(fill_width);
                 message.push_str(&filler);
