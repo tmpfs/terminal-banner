@@ -8,7 +8,11 @@
 //!     .render();
 //! println!("{}", banner);
 //! ```
-// #![deny(missing_docs)]
+//!
+//! Use the `color` feature to enable support for terminal colors, 
+//! see the examples for usage.
+//!
+#![deny(missing_docs)]
 
 #[cfg(feature = "color")]
 use colored::Colorize;

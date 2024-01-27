@@ -1,27 +1,33 @@
 #[cfg(feature = "color")]
 use colored::Color;
 
+/// Variants for text alignment.
 #[derive(Default, Copy, Clone)]
 pub enum TextAlign {
-    /// text align left
+    /// Text align left
     #[default]
     LEFT,
-    /// text align right
+    /// Text align right
     RIGHT,
-    /// text align center
+    /// Text align center
     CENTER,
 }
 
-/// text content
+/// Text content.
 #[derive(Default, Clone)]
 pub struct Text {
+    /// Content for the text.
     pub content: String,
+    /// Styling information.
     pub style: TextStyle,
 }
 
+/// Text style.
 #[derive(Clone)]
 pub struct TextStyle {
+    /// Alignment.
     pub align: TextAlign,
+    /// Color information.
     #[cfg(feature = "color")]
     pub color: Color,
 }
@@ -37,11 +43,13 @@ impl Default for TextStyle {
 }
 
 impl Text {
+    /// Set the text alignment.
     pub fn align(mut self, align: TextAlign) -> Self {
         self.style.align = align;
         self
     }
-
+    
+    /// Set the text color.
     #[cfg(feature = "color")]
     pub fn color(mut self, color: Color) -> Self {
         self.style.color = color;
