@@ -6,11 +6,11 @@ use colored::Color;
 pub enum TextAlign {
     /// Text align left
     #[default]
-    LEFT,
+    Left,
     /// Text align right
-    RIGHT,
+    Right,
     /// Text align center
-    CENTER,
+    Center,
 }
 
 /// Text content.

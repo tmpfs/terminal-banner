@@ -1,27 +1,29 @@
 //! Tiny utility to render a boxed banner at the width of the terminal.
 //!
+//! Use the `color` feature to enable support for terminal colors, 
+//! see the examples for usage.
+//!
 //! ```
-//! use terminal_banner::{Banner, Text};
+//! use terminal_banner::Banner;
 //! let banner = Banner::new()
-//!     .text(Text::from("LIPSUM"))
-//!     .text(Text::from("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))
+//!     .text("LIPSUM".into())
+//!     .text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.".into())
 //!     .render();
 //! println!("{}", banner);
 //! ```
 //!
-//! Use the `color` feature to enable support for terminal colors, 
-//! see the examples for usage.
-//!
 #![deny(missing_docs)]
+#![forbid(unsafe_code)]
+#![cfg_attr(all(doc, CHANNEL_NIGHTLY), feature(doc_auto_cfg))]
 
 #[cfg(feature = "color")]
 use colored::Colorize;
 use textwrap::core::display_width;
 use textwrap::{termwidth, wrap, Options};
 
-pub use text::{Text, TextAlign, TextStyle};
-
 mod text;
+
+pub use text::{Text, TextAlign, TextStyle};
 
 /// Collection of box drawing symbols used to draw the banner outline.
 pub struct BoxSymbols {
@@ -191,14 +193,14 @@ impl Banner {
                         0
                     } else {
                         match text.style.align {
-                            TextAlign::LEFT => 0,
-                            TextAlign::RIGHT => {
+                            TextAlign::Left => 0,
+                            TextAlign::Right => {
                                 width
                                     - 2
                                     - self.padding.right as usize
                                     - text.content.len()
                             }
-                            TextAlign::CENTER => {
+                            TextAlign::Center => {
                                 (width - 2 - text.content.len()) / 2
                             }
                         }
