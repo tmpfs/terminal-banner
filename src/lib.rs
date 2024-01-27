@@ -83,7 +83,7 @@ impl Padding {
 
 enum Line {
     Text(Text),
-    Br,
+    Divider(char),
 }
 
 /// Render a terminal banner.
@@ -125,21 +125,27 @@ impl Banner {
         self
     }
 
-    /// Append a divider rule.
-    pub fn divider(mut self) -> Self {
-        let width = self.width.unwrap_or_else(termwidth)
-            - 2
-            - self.padding.left as usize
-            - self.padding.right as usize;
-        let text = Text::from(String::from(self.symbols.h).repeat(width));
-        self.lines.push(Line::Text(text));
+    /// Append a divider with customize char.
+    pub fn divider_with(mut self, character: char) -> Self {
+        self.lines.push(Line::Divider(character));
         self
     }
 
-    /// Append a br rule.
-    pub fn br(mut self) -> Self {
-        self.lines.push(Line::Br);
+    /// Append a divider rule.
+    pub fn divider(mut self) -> Self {
+        self.lines.push(Line::Divider(self.symbols.h));
         self
+    }
+
+    /// Append a divider with space.
+    pub fn divider_with_space(mut self) -> Self {
+        self.lines.push(Line::Divider(' '));
+        self
+    }
+
+    /// Append a newline rule.
+    pub fn newline(self) -> Self {
+        self.divider_with_space()
     }
 
     /// Render the banner.
@@ -225,8 +231,20 @@ impl Banner {
 
                     message.push('\n');
                 }
-                Line::Br => {
-                    message.push_str(&spacer);
+                Line::Divider(character) => {
+                    let mut divider = String::from(&indent);
+                    divider.push_str(&*character.to_string().repeat(
+                        width
+                            - 2
+                            - self.padding.left as usize
+                            - self.padding.right as usize,
+                    ));
+                    divider.push_str(
+                        &String::from(' ').repeat(self.padding.right.into()),
+                    );
+                    divider.push(self.symbols.v);
+                    divider.push('\n');
+                    message.push_str(&divider);
                 }
             }
         }
