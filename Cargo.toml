@@ -9,5 +9,20 @@ repository = "https://github.com/tmpfs/terminal-banner"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 
+[[example]]
+name = "default"
+path = "examples/default.rs"
+required-features = ["color"]
+
+[[example]]
+name = "strong"
+path = "examples/strong.rs"
+required-features = ["color"]
+
+[features]
+color = ["colored"]
+
 [dependencies]
-textwrap = { version = "0.15", features = ["terminal_size"] }
+textwrap = { version = "0.16", features = ["terminal_size"] }
+colored = { version = "2.1.0", optional = true }
+
