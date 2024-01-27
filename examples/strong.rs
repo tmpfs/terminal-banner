@@ -7,6 +7,7 @@ fn main() {
         .symbols(BoxSymbols::strong())
         .padding(Padding::one())
         .text(Text::from("DEFAULT"))
+        .br()
         .text(Text::from("LEFT").align(TextAlign::LEFT).color(Color::BrightGreen))
         .text(Text::from("CENTER").align(TextAlign::CENTER).color(Color::BrightBlue))
         .text(Text::from("RIGHT").align(TextAlign::RIGHT).color(Color::BrightRed))

@@ -81,11 +81,16 @@ impl Padding {
     }
 }
 
+enum Line {
+    Text(Text),
+    Br,
+}
+
 /// Render a terminal banner.
 #[derive(Default)]
 pub struct Banner {
     symbols: BoxSymbols,
-    lines: Vec<Text>,
+    lines: Vec<Line>,
     padding: Padding,
     width: Option<usize>,
 }
@@ -116,7 +121,7 @@ impl Banner {
 
     /// Append a block of text to wrap inside the banner.
     pub fn text(mut self, text: Text) -> Self {
-        self.lines.push(text);
+        self.lines.push(Line::Text(text));
         self
     }
 
@@ -127,7 +132,13 @@ impl Banner {
             - self.padding.left as usize
             - self.padding.right as usize;
         let text = Text::from(String::from(self.symbols.h).repeat(width));
-        self.lines.push(text);
+        self.lines.push(Line::Text(text));
+        self
+    }
+
+    /// Append a br rule.
+    pub fn br(mut self) -> Self {
+        self.lines.push(Line::Br);
         self
     }
 
@@ -163,55 +174,60 @@ impl Banner {
             message.push_str(&spacer);
         }
 
-        let lines_length = self.lines.len();
-        for (index, text) in self.lines.iter().enumerate() {
-            let repeat = if text.content.len() > width {
-                0
-            } else {
-                match text.style.align {
-                    TextAlign::LEFT => 0,
-                    TextAlign::RIGHT => {
-                        width
-                            - 2
-                            - self.padding.right as usize
-                            - text.content.len()
-                    }
-                    TextAlign::CENTER => (width - 2 - text.content.len()) / 2,
-                }
-            };
-            let mut context = String::from(' ').repeat(if repeat > 0 {
-                repeat - self.padding.right as usize
-            } else {
-                repeat
-            });
-            context.push_str(text.content.as_str());
-            let lines = wrap(context.as_str(), &options);
-            let length = lines.len();
+        for (_, line) in self.lines.iter().enumerate() {
+            match line {
+                Line::Text(text) => {
+                    let repeat = if text.content.len() > width {
+                        0
+                    } else {
+                        match text.style.align {
+                            TextAlign::LEFT => 0,
+                            TextAlign::RIGHT => {
+                                width
+                                    - 2
+                                    - self.padding.right as usize
+                                    - text.content.len()
+                            }
+                            TextAlign::CENTER => {
+                                (width - 2 - text.content.len()) / 2
+                            }
+                        }
+                    };
+                    let mut context =
+                        String::from(' ').repeat(if repeat > 0 {
+                            repeat - self.padding.right as usize
+                        } else {
+                            repeat
+                        });
+                    context.push_str(text.content.as_str());
+                    let lines = wrap(context.as_str(), &options);
+                    let length = lines.len();
 
-            for (index, line) in lines.into_iter().enumerate() {
-                #[cfg(feature = "color")]
-                let line = {
-                    let mut line_text = String::from(self.symbols.v);
-                    let line = &line[self.symbols.v.len_utf8()..]
-                        .color(text.style.color)
-                        .to_string();
-                    line_text.push_str(&line);
-                    line_text
-                };
-                message.push_str(&line);
-                let fill_width = width - display_width(&line) - 1;
-                let filler = String::from(' ').repeat(fill_width);
-                message.push_str(&filler);
-                message.push(self.symbols.v);
-                if index < length - 1 {
+                    for (index, line) in lines.into_iter().enumerate() {
+                        #[cfg(feature = "color")]
+                        let line = {
+                            let mut line_text = String::from(self.symbols.v);
+                            let line = &line[self.symbols.v.len_utf8()..]
+                                .color(text.style.color)
+                                .to_string();
+                            line_text.push_str(&line);
+                            line_text
+                        };
+                        message.push_str(&line);
+                        let fill_width = width - display_width(&line) - 1;
+                        let filler = String::from(' ').repeat(fill_width);
+                        message.push_str(&filler);
+                        message.push(self.symbols.v);
+                        if index < length - 1 {
+                            message.push('\n');
+                        }
+                    }
+
                     message.push('\n');
                 }
-            }
-
-            message.push('\n');
-
-            if index < lines_length - 1 {
-                message.push_str(&spacer);
+                Line::Br => {
+                    message.push_str(&spacer);
+                }
             }
         }
 
