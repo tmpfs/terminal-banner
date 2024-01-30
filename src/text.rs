@@ -76,6 +76,15 @@ impl<'a> From<&'a str> for Text<'a> {
     }
 }
 
+impl<'a> From<&'a String> for Text<'a> {
+    fn from(value: &'a String) -> Self {
+        Text {
+            content: Cow::Borrowed(value),
+            ..Default::default()
+        }
+    }
+}
+
 impl<'a> From<Cow<'a, str>> for Text<'a> {
     fn from(value: Cow<'a, str>) -> Self {
         Text {
