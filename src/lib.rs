@@ -25,6 +25,9 @@ mod text;
 
 pub use text::{Text, TextAlign, TextStyle};
 
+#[cfg(feature = "color")]
+pub use colored;
+
 /// Collection of box drawing symbols used to draw the banner outline.
 pub struct BoxSymbols {
     tl: char,
