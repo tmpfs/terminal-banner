@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 #[cfg(feature = "color")]
 use colored::Color;
 
@@ -15,9 +16,9 @@ pub enum TextAlign {
 
 /// Text content.
 #[derive(Default, Clone)]
-pub struct Text {
+pub struct Text<'a> {
     /// Content for the text.
-    pub content: String,
+    pub content: Cow<'a, str>,
     /// Styling information.
     pub style: TextStyle,
 }
@@ -42,7 +43,7 @@ impl Default for TextStyle {
     }
 }
 
-impl Text {
+impl<'a> Text<'a> {
     /// Set the text alignment.
     pub fn align(mut self, align: TextAlign) -> Self {
         self.style.align = align;
@@ -57,19 +58,28 @@ impl Text {
     }
 }
 
-impl From<String> for Text {
+impl From<String> for Text<'_> {
     fn from(value: String) -> Self {
         Text {
-            content: value,
+            content: Cow::Owned(value),
             ..Default::default()
         }
     }
 }
 
-impl From<&str> for Text {
-    fn from(value: &str) -> Self {
+impl<'a> From<&'a str> for Text<'a> {
+    fn from(value: &'a str) -> Self {
         Text {
-            content: value.to_string(),
+            content: Cow::Borrowed(value),
+            ..Default::default()
+        }
+    }
+}
+
+impl<'a> From<Cow<'a, str>> for Text<'a> {
+    fn from(value: Cow<'a, str>) -> Self {
+        Text {
+            content: value,
             ..Default::default()
         }
     }
