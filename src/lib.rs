@@ -1,6 +1,6 @@
 //! Tiny utility to render a boxed banner at the width of the terminal.
 //!
-//! Use the `color` feature to enable support for terminal colors, 
+//! Use the `color` feature to enable support for terminal colors,
 //! see the examples for usage.
 //!
 //! ```
@@ -24,6 +24,9 @@ use textwrap::{termwidth, wrap, Options};
 mod text;
 
 pub use text::{Text, TextAlign, TextStyle};
+
+#[cfg(feature = "color")]
+pub use colored;
 
 /// Collection of box drawing symbols used to draw the banner outline.
 pub struct BoxSymbols {
@@ -87,21 +90,21 @@ impl Padding {
     }
 }
 
-enum Line {
-    Text(Text),
+enum Line<'a> {
+    Text(Text<'a>),
     Divider(char),
 }
 
 /// Render a terminal banner.
 #[derive(Default)]
-pub struct Banner {
+pub struct Banner<'a> {
     symbols: BoxSymbols,
-    lines: Vec<Line>,
+    lines: Vec<Line<'a>>,
     padding: Padding,
     width: Option<usize>,
 }
 
-impl Banner {
+impl<'a> Banner<'a> {
     /// Create a new banner.
     pub fn new() -> Self {
         Default::default()
@@ -126,7 +129,7 @@ impl Banner {
     }
 
     /// Append a block of text to wrap inside the banner.
-    pub fn text(mut self, text: Text) -> Self {
+    pub fn text(mut self, text: Text<'a>) -> Self {
         self.lines.push(Line::Text(text));
         self
     }
@@ -211,7 +214,7 @@ impl Banner {
                         } else {
                             repeat
                         });
-                    context.push_str(text.content.as_str());
+                    context.push_str(text.content.as_ref());
                     let lines = wrap(context.as_str(), &options);
                     let length = lines.len();
 
