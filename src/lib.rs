@@ -1,6 +1,6 @@
 //! Tiny utility to render a boxed banner at the width of the terminal.
 //!
-//! Use the `color` feature to enable support for terminal colors, 
+//! Use the `color` feature to enable support for terminal colors,
 //! see the examples for usage.
 //!
 //! ```

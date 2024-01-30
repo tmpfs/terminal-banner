@@ -1,6 +1,6 @@
-use std::borrow::Cow;
 #[cfg(feature = "color")]
 use colored::Color;
+use std::borrow::Cow;
 
 /// Variants for text alignment.
 #[derive(Default, Copy, Clone)]
@@ -49,7 +49,7 @@ impl<'a> Text<'a> {
         self.style.align = align;
         self
     }
-    
+
     /// Set the text color.
     #[cfg(feature = "color")]
     pub fn color(mut self, color: Color) -> Self {
